@@ -30,7 +30,6 @@ class QuestionController {
 
   static myQuestion(req,res,next){
     const {_id} = req.loggedUser
-    console.log(req.loggedUser)
     Question.find({UserId:_id})
       .then(data => {
         res.status(200).json(data)
@@ -40,10 +39,15 @@ class QuestionController {
 
   static editQuestion(req,res,next){
     const {_id} = req.params //question id
-    const {description, title} = req.body
-    Question.updateOne({_id},{description,title})
+    const {description, title, tags} = req.body
+    let dataTemp = tags.split(',')
+    let tagFinal = []
+    for(let i = 0; i < dataTemp.length; i++){
+      tagFinal.push(dataTemp[i].trim())
+    }
+    Question.updateOne({_id},{description,title,tags:tagFinal})
       .then(data => {
-        res.status(200).json(data)
+        res.status(200).json({ message:'Update question success!',data })
       })
       .catch(next)
   }
@@ -51,23 +55,26 @@ class QuestionController {
   static updateUpvotes(req,res,next){
     const {_id} = req.params // Need a question id for update upvotes
     const UserId = req.loggedUser._id
+    let messageStatus
     Question.findOne({_id})
       .then(data => {
         if(data){
           for(let i = 0; i < data.upvotes.length; i++){
             if(data.upvotes[i] == UserId){
-              // return res.status(400).json({msg:"You have upvotes this before"})
+              messageStatus = 'Upvotes canceled'
               return Question.updateOne({_id},{$pull:{upvotes:UserId}})
             }
           }
           for(let i = 0; i < data.downvotes.length; i++){
             if(data.downvotes[i] == UserId){
+              messageStatus = 'Upvotes success, delete downvotes'
               return Promise.all([
                 Question.updateOne({_id},{$pull:{downvotes:UserId}}),
                 Question.updateOne({_id},{$push:{upvotes:UserId}})
               ])
             }
           }
+          messageStatus = 'Upvotes success'
           return Question.updateOne({_id},{$push:{upvotes:UserId}})
         }
         else{
@@ -75,7 +82,7 @@ class QuestionController {
         }
       })
       .then(data => {
-        res.status(200).json({data})
+        res.status(200).json({ message:messageStatus,data })
       })
       .catch(next)
   }
@@ -83,23 +90,26 @@ class QuestionController {
   static updateDownvotes(req,res,next){
     const {_id} = req.params // Need a question id for update upvotes
     const UserId = req.loggedUser._id
+    let messageStatus
     Question.findOne({_id})
       .then(data => {
         if(data){
           for(let i = 0; i < data.downvotes.length; i++){
             if(data.downvotes[i] == UserId){
+              messageStatus = 'Downvotes canceled'
               return Question.updateOne({_id},{$pull:{downvotes:UserId}})
             }
           }
           for(let i = 0; i < data.upvotes.length; i++){
             if(data.upvotes[i] == UserId){
-              console.log("masuk")
+              messageStatus = 'Downvotes success, delete upvotes'
               return Promise.all([
                 Question.updateOne({_id},{$pull:{upvotes:UserId}}),
                 Question.updateOne({_id},{$push:{downvotes:UserId}})
               ])
             }
           }
+          messageStatus = 'Downvotes success'
           return Question.updateOne({_id},{$push:{downvotes:UserId}})
         }
         else{
@@ -107,7 +117,7 @@ class QuestionController {
         }
       })
       .then(data => {
-        res.status(200).json({data})
+        res.status(200).json({ message:messageStatus,data })
       })
       .catch(next)
   }
@@ -115,8 +125,14 @@ class QuestionController {
   static createQuestion(req,res,next){
     const {_id} = req.loggedUser
     const {title,description,tags} = req.body
-    Question.create({title,description,UserId:_id,tags})
+    let dataTemp = tags.split(',')
+    let tagFinal = []
+    for(let i = 0; i < dataTemp.length; i++){
+      tagFinal.push(dataTemp[i].trim())
+    }
+    Question.create({title,description,UserId:_id,tags:tagFinal})
       .then(data => {
+        console.log(data)
         res.status(200).json(data)
       })
       .catch(next)
@@ -126,7 +142,10 @@ class QuestionController {
     const {_id} = req.params //question id
     Question.deleteOne({_id})
       .then(data => {
-        res.status(200).json(data)
+        return Answer.deleteMany({QuestionId:_id})
+      })
+      .then(data => {
+        res.status(200).json({ message:'Success delete data!',data })
       })
       .catch(next)
   }

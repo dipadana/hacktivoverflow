@@ -10,9 +10,9 @@ class UserController {
       .then(data => {
         if(data){
           if(decodeHash(password,data.password)){
-            const {name, email, _id} = data
-            let token = generateToken({name,email,_id})
-            res.status(200).json({access_token:token,name,_id})
+            const {name, email, _id, tags} = data
+            let token = generateToken({name,email,_id,tags})
+            res.status(200).json({access_token:token,name,_id,tags})
           }
           else{
             throw { message:'Invalid email or password!',status:400 }
@@ -27,8 +27,13 @@ class UserController {
 
   static register(req,res,next){
     console.log(req.body)
-    const {name,email,password} = req.body
-    User.create({name,email,password})
+    const {name,email,password,tags} = req.body
+    let dataTemp = tags.split(',')
+    let tagFinal = []
+    for(let i = 0; i < dataTemp.length; i++){
+      tagFinal.push(dataTemp[i].trim())
+    }
+    User.create({name,email,password,tags:tagFinal})
       .then(data => {
         res.status(200).json(data)
       })

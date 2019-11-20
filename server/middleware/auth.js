@@ -12,7 +12,7 @@ function authentication (req,res,next) {
   }
 }
 
-function authorization (req,res,next) {
+function questionAuthorization (req,res,next) {
   const { _id } = req.params // Question Id
   Question.findOne({_id})
     .then(data => {
@@ -27,5 +27,5 @@ function authorization (req,res,next) {
 }
 
 module.exports = {
-  authentication,authorization
+  authentication,questionAuthorization
 }

@@ -3,9 +3,9 @@ const Question = require('../models/question')
 
 class AnswerController {
   
-  static find(req,res,next){
-    const {QuestionId} = req.body // Need a question id for get question answer
-    Answer.findOne({QuestionId})
+  static findMyQuestion(req,res,next){
+    const {_id} = req.loggedUser // Need a question id for get question answer
+    Answer.find({UserId:_id}).populate('QuestionId')
       .then(data => {
         res.status(200).json(data)
       })
@@ -20,7 +20,7 @@ class AnswerController {
         return Question.update({_id:QuestionId},{$push:{AnswerId:data._id}})
       })
       .then(data => {
-        res.status(200).json(data)
+        res.status(200).json({message:'Add answer success',data})
       })
       .catch(next)
   }
@@ -32,7 +32,12 @@ class AnswerController {
         return Question.updateOne({_id:QuestionId},{$pull:{AnswerId:_id}})
       })
       .then(data => {
-        res.status(200).json(data)
+        if(data.nModified !== 0){
+          res.status(200).json({message:'Delete data success',data})
+        }
+        else{
+          res.status(404).json({message:'Data not found',data})
+        }
       })
       .catch(next)
   }
@@ -42,7 +47,12 @@ class AnswerController {
     const {description} = req.body
     Answer.updateOne({_id},{description})
       .then(data => {
-        res.status(200).json(data)
+        if(data.n != 0){
+          res.status(200).json({message:'Edit answer success!',data})
+        }
+        else{
+          res.status(404).json({message:'No data found!',data})
+        }
       })
       .catch(next)
   }
@@ -50,23 +60,26 @@ class AnswerController {
   static updateUpvotes(req,res,next){
     const {_id} = req.params // Need a answer id for update upvotes
     const UserId = req.loggedUser._id
+    let messageStatus
     Answer.findOne({_id})
       .then(data => {
         if(data){
           for(let i = 0; i < data.upvotes.length; i++){
             if(data.upvotes[i] == UserId){
-              // return res.status(400).json({msg:"You have upvotes this before"})
+              messageStatus = 'Upvotes canceled'
               return Answer.updateOne({_id},{$pull:{upvotes:UserId}})
             }
           }
           for(let i = 0; i < data.downvotes.length; i++){
             if(data.downvotes[i] == UserId){
+              messageStatus = 'Upvotes success, delete downvotes'
               return Promise.all([
                 Answer.updateOne({_id},{$pull:{downvotes:UserId}}),
                 Answer.updateOne({_id},{$push:{upvotes:UserId}})
               ])
             }
           }
+          messageStatus = 'Upvotes success'
           return Answer.updateOne({_id},{$push:{upvotes:UserId}})
         }
         else{
@@ -74,7 +87,7 @@ class AnswerController {
         }
       })
       .then(data => {
-        res.status(200).json({data})
+        res.status(200).json({message:messageStatus,data})
       })
       .catch(next)
   }
@@ -82,23 +95,26 @@ class AnswerController {
   static updateDownvotes(req,res,next){
     const {_id} = req.params // Need a answer id for update upvotes
     const UserId = req.loggedUser._id
+    let messageStatus
     Answer.findOne({_id})
       .then(data => {
         if(data){
           for(let i = 0; i < data.downvotes.length; i++){
             if(data.downvotes[i] == UserId){
-              // return res.status(400).json({msg:"You have downvotes this before"})
+              messageStatus = 'Downvotes canceled'
               return Answer.updateOne({_id},{$pull:{downvotes:UserId}})
             }
           }
           for(let i = 0; i < data.upvotes.length; i++){
             if(data.upvotes[i] == UserId){
+              messageStatus = 'Downvotes success, delete upvotes'
               return Promise.all([
                 Answer.updateOne({_id},{$pull:{upvotes:UserId}}),
                 Answer.updateOne({_id},{$push:{downvotes:UserId}})
               ])
             }
           }
+          messageStatus = 'Downvotes success'
           return Answer.updateOne({_id},{$push:{downvotes:UserId}})
         }
         else{
@@ -106,7 +122,7 @@ class AnswerController {
         }
       })
       .then(data => {
-        res.status(200).json({data})
+        res.status(200).json({message:messageStatus,data})
       })
       .catch(next)
   }

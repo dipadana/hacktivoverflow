@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const questionController = require('../controllers/questionController')
-const {authentication,authorization} = require('../middleware/auth')
+const {authentication,questionAuthorization} = require('../middleware/auth')
 
 router.get('/', questionController.questionList) //ok
 router.get('/detail/:_id', questionController.questionDetail) //ok
@@ -8,12 +8,11 @@ router.get('/detail/:_id', questionController.questionDetail) //ok
 router.use(authentication)
 
 router.get('/myquestion', questionController.myQuestion) //ok
-router.post('/', questionController.createQuestion)
-router.patch('/upvotes/:_id', questionController.updateUpvotes)
-router.patch('/downvotes/:_id', questionController.updateDownvotes)
+router.post('/', questionController.createQuestion) //ok
+router.patch('/upvotes/:_id', questionController.updateUpvotes) //ok
+router.patch('/downvotes/:_id', questionController.updateDownvotes) //ok
 
-router.delete('/:_id', authorization, questionController.deleteQuestion)
-router.put('/:_id', authorization, questionController.editQuestion)
-
+router.put('/:_id', questionAuthorization, questionController.editQuestion) //ok
+router.delete('/:_id', questionAuthorization, questionController.deleteQuestion) //ok
 
 module.exports = router
