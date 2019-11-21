@@ -38,13 +38,13 @@ export default {
     fetchAllTagData () {
       this.axios({
         method: 'get',
-        url: 'http://localhost:3000/tags'
+        url: '/tags'
       })
         .then(({ data }) => {
           this.options = data
           return this.axios({
             method: 'get',
-            url: 'http://localhost:3000/users/tags',
+            url: '/users/tags',
             headers: {
               authorization: localStorage.getItem('access_token')
             }
@@ -61,7 +61,7 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err.response.data)
+          console.log(err.response)
           this.next(err.response.data)
         })
     },

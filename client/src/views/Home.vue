@@ -57,7 +57,7 @@ export default {
     fetchQuestion () {
       this.axios({
         method: 'get',
-        url: 'http://localhost:3000/questions'
+        url: '/questions'
       })
         .then(({ data }) => {
           this.questionData = data
