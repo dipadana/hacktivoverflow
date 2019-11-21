@@ -39,6 +39,31 @@ class UserController {
       })
       .catch(next)
   }
+
+  static editTag (req,res,next) {
+    const {tags} = req.body
+    const {_id} = req.loggedUser
+    let dataTemp = tags.split(',')
+    let tagFinal = []
+    for(let i = 0; i < dataTemp.length; i++){
+      tagFinal.push(dataTemp[i].trim())
+    }
+    User.updateOne({_id},{tags:tagFinal})
+      .then(data => {
+        req.status(200).json(data)
+      })
+      .catch(next)
+  }
+
+  static deleteTag (req,res,next) {
+    const {tag} = req.params
+    const {_id} = req.loggedUser
+    User.updateOne({_id},{$pull:{tags:tag}})
+      .then(data => {
+        req.status(200).json(data)
+      })
+      .catch(next)
+  }
 }
 
 module.exports = UserController

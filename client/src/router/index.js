@@ -52,16 +52,17 @@ const routes = [
     name: 'addquestion',
     component: AddQuestion,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('access_token')) {
-        next()
-      } else {
-        Swal.fire(
-          'Stop!',
-          'You must login first to continue!',
-          'error'
-        )
-        next('/login')
-      }
+      next()
+    //   if (localStorage.getItem('access_token')) {
+    //     next()
+    //   } else {
+    //     Swal.fire(
+    //       'Stop!',
+    //       'You must login first to continue!',
+    //       'error'
+    //     )
+    //     next('/login')
+    //   }
     }
   },
   {

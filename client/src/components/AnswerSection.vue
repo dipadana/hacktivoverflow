@@ -33,10 +33,10 @@
           </b-row>
         </b-container>
       </template>
-      <div v-if="!show" >Masuk html disini</div>
+      <div v-if="!show" v-html="content"></div>
 
       <b-col v-if="show" class="ml-0 h-100">
-        <!-- <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor> -->
+        <VueEditor id="editor1" v-model="content" />
         <b-button @click="updateAnswerProcess()" class="mr-2 mb-5 mt-3" size="" variant="success">Edit answer</b-button>
       </b-col>
 
@@ -46,7 +46,7 @@
 
 <script>
 import axios from '../api/server'
-// import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import { VueEditor } from 'vue2-editor'
 import Swal from 'sweetalert2'
 
 export default {
@@ -54,6 +54,9 @@ export default {
   props: [
     'data'
   ],
+  components:{
+    VueEditor
+  },
   created () {
     // console.log(this.data, 'ini data di answer')
     // this.votes = this.data.upvotes.length - this.data.downvotes.length
@@ -63,7 +66,10 @@ export default {
       votes: 0,
       show: false,
       upBold: false,
-      downBold: false
+      downBold: false,
+      content: "<p>Some initial contensdsddt</p>",
+      title: '',
+      tags: ''
     }
   },
   methods: {
@@ -185,5 +191,7 @@ export default {
 </script>
 
 <style>
-
+#editor1 {
+  height: 200px;
+}
 </style>

@@ -5,9 +5,12 @@
       <b-form-group>
         <b-form-input v-model="title" placeholder="Question Title" required></b-form-input>
       </b-form-group>
+      <b-form-group>
+        <b-form-input v-model="tags" placeholder="Tag" required></b-form-input>
+      </b-form-group>
       <b-row>
         <b-col>
-          <!-- <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor> -->
+          <VueEditor v-model="content" />
         </b-col>
       </b-row>
       <b-button type="submit" class="mr-2 mt-3" size="" variant="success">Edit</b-button>
@@ -16,19 +19,19 @@
 </template>
 
 <script>
-// import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import { VueEditor } from 'vue2-editor'
 import axios from '../api/server'
 
 export default {
   data () {
     return {
-      editor: ClassicEditor,
-      editorData: '',
-      editorConfig: {
-        placeholder: 'Write your answer here...'
-      },
-      title: ''
+      content: "<h1>Some initial contensdsddt</h1>",
+      title: '',
+      tags: ''
     }
+  },
+  components:{
+    VueEditor
   },
   methods: {
     editQuestion () {
