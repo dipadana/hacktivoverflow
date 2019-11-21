@@ -5,11 +5,22 @@ import './plugins/bootstrap-vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-// import CKEditor from '@ckeditor/ckeditor5-vue'
+import moment from 'moment'
+import { next, successToast, closeLoading, showLoading } from './helpers/notif'
+import axios from './api/server'
+
+Vue.mixin({
+  methods: {
+    next,
+    successToast,
+    closeLoading,
+    showLoading,
+    axios
+  }
+})
 
 Vue.config.productionTip = false
-
-// Vue.use(CKEditor)
+Vue.prototype.moment = moment
 
 new Vue({
   router,

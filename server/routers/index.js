@@ -11,7 +11,6 @@ router.get('/', (req,res,next) => {
 router.use('/questions', questionRouter)
 router.use('/answers', answerRouter)
 router.use('/users', userRouter)
-console.log('mausk index')
 router.use('/tags', tagRouter)
 
 module.exports = router

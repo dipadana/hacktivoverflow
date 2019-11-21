@@ -28,29 +28,38 @@ class UserController {
   static register(req,res,next){
     console.log(req.body)
     const {name,email,password,tags} = req.body
-    let dataTemp = tags.split(',')
-    let tagFinal = []
-    for(let i = 0; i < dataTemp.length; i++){
-      tagFinal.push(dataTemp[i].trim())
-    }
-    User.create({name,email,password,tags:tagFinal})
+    // let dataTemp = tags.split(',')
+    // let tagFinal = []
+    // for(let i = 0; i < dataTemp.length; i++){
+    //   tagFinal.push(dataTemp[i].trim())
+    // }
+    User.create({name,email,password})
       .then(data => {
         res.status(200).json(data)
       })
       .catch(next)
   }
 
-  static editTag (req,res,next) {
-    const {tags} = req.body
+  static getMyTag (req,res,next) {
     const {_id} = req.loggedUser
-    let dataTemp = tags.split(',')
-    let tagFinal = []
-    for(let i = 0; i < dataTemp.length; i++){
-      tagFinal.push(dataTemp[i].trim())
-    }
-    User.updateOne({_id},{tags:tagFinal})
+    User.findOne({_id})
       .then(data => {
-        req.status(200).json(data)
+        res.status(200).json(data.tags)
+      })
+      .catch(next)
+  }
+
+  static editTag (req,res,next) {
+    const {tag} = req.body
+    const {_id} = req.loggedUser
+    // let dataTemp = tags.split(',')
+    // let tagFinal = []
+    // for(let i = 0; i < dataTemp.length; i++){
+    //   tagFinal.push(dataTemp[i].trim())
+    // }
+    User.updateOne({_id},{$addToSet:{tags:tag}})
+      .then(data => {
+        res.status(200).json(data)
       })
       .catch(next)
   }

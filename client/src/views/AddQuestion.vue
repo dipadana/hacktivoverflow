@@ -3,10 +3,10 @@
     <p class="h2 mt-5 mb-4">Your Question</p>
     <b-form @submit.prevent="postQuestion()">
       <b-form-group>
-        <b-form-input v-model="tags" placeholder="Question Title" required></b-form-input>
+        <b-form-input v-model="title" placeholder="Question Title" required></b-form-input>
       </b-form-group>
       <b-form-group>
-        <b-form-input v-model="tags" placeholder="Tag" required></b-form-input>
+        <b-form-input v-model="tags" placeholder="Tag. example: java, ruby" required></b-form-input>
       </b-form-group>
       <b-row>
         <b-col>
@@ -25,7 +25,7 @@ import axios from '../api/server'
 export default {
   data () {
     return {
-      content: "<h1>Some initial contensdsddt</h1>",
+      content: '',
       title: '',
       tags: ''
     }
@@ -35,12 +35,13 @@ export default {
   },
   methods: {
     postQuestion () {
-      axios({
+      this.axios({
         method: 'post',
         url: '/questions',
         data: {
           title: this.title,
-          description: this.editorData
+          description: this.content,
+          tags: this.tags
         },
         headers: {
           Authorization: localStorage.getItem('access_token')
@@ -48,10 +49,12 @@ export default {
       })
         .then(({ data }) => {
           console.log(data)
+          this.successToast('Question created.')
           this.$router.push({ path: `/question/${data._id}` })
         })
         .catch(err => {
-          console.log(err.response, 'masuk')
+          console.log(err.response.data)
+          this.next(err.response.data)
         })
     }
   }

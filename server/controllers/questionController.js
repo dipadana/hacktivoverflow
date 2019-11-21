@@ -28,6 +28,27 @@ class QuestionController {
       .catch(next)
   }
 
+  static questionByTag(req,res,next) {
+    const {tag} = req.params
+    Question.find({tags:tag}).sort({createdAt: -1})
+      .then(data => {
+        res.status(200).json(data)
+      })
+      .catch(next)
+  }
+
+  static async questionBySearchKey(req,res,next) {
+    const {searchKey} = req.params
+    let filterRegex = new RegExp(searchKey, 'gi')
+    try{
+      const data = await Question.find({title : {$regex : filterRegex}})
+      res.status(200).json(data)
+    }
+    catch(err){
+      next(err)
+    }
+  }
+
   static myQuestion(req,res,next){
     const {_id} = req.loggedUser
     Question.find({UserId:_id})

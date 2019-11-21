@@ -7,6 +7,9 @@ import Register from '../views/Register.vue'
 import AddQuestion from '../views/AddQuestion.vue'
 import EditQuestion from '../views/EditQuestion.vue'
 import Search from '../views/Search.vue'
+import Searchtag from '../views/Searchtag.vue'
+import Myquestion from '../views/Myquestion.vue'
+import Myanswer from '../views/Myanswer.vue'
 import Swal from 'sweetalert2'
 
 Vue.use(VueRouter)
@@ -43,9 +46,24 @@ const routes = [
     component: Register
   },
   {
-    path: '/search',
+    path: '/search/:key',
     name: 'search',
     component: Search
+  },
+  {
+    path: '/tag/:tag',
+    name: 'tag',
+    component: Searchtag
+  },
+  {
+    path: '/myquestion',
+    name: 'myquestion',
+    component: Myquestion
+  },
+  {
+    path: '/myanswer',
+    name: 'myanswer',
+    component: Myanswer
   },
   {
     path: '/addquestion',
@@ -53,16 +71,16 @@ const routes = [
     component: AddQuestion,
     beforeEnter: (to, from, next) => {
       next()
-    //   if (localStorage.getItem('access_token')) {
-    //     next()
-    //   } else {
-    //     Swal.fire(
-    //       'Stop!',
-    //       'You must login first to continue!',
-    //       'error'
-    //     )
-    //     next('/login')
-    //   }
+      if (localStorage.getItem('access_token')) {
+        next()
+      } else {
+        Swal.fire(
+          'Stop!',
+          'You must login first to continue!',
+          'error'
+        )
+        next('/login')
+      }
     }
   },
   {

@@ -4,6 +4,8 @@ const {authentication,questionAuthorization} = require('../middleware/auth')
 
 router.get('/', questionController.questionList) //ok
 router.get('/detail/:_id', questionController.questionDetail) //ok
+router.get('/searchtag/:tag', questionController.questionByTag)
+router.get('/searchtitle/:searchKey', questionController.questionBySearchKey)
 
 router.use(authentication)
 

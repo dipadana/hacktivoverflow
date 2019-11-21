@@ -1,94 +1,90 @@
 <template>
 
-    <b-container>
+    <div>
+      <b-container v-if="!loginStatus" style="height: 90vh;" class="px-5">
+        <b-row class="align-items-center justify-content-center h-100" style="flex-direction:column;">
+          <img src="https://image.flaticon.com/icons/svg/1683/1683680.svg" width="200" alt="">
+          <div>
+            <h1 class="text-center main-title">Welcome in <span class="text-primary">Hacktivoverflow...</span></h1>
+            <h5 class="text-center sub-title mt-2">Just hit the search bar, and type your answer!</h5>
+            <p class="text-center mt-2"><small>We love people who code.</small></p>
+          </div>
+        </b-row>
+      </b-container>
+      <div v-if="loginStatus">
+        <b-container>
 
-      <b-row>
-        <b-col>
-          <b-jumbotron header="Question List" class="p-5 bg-light border mb-0" lead="">
-            <router-link to="/addquestion"><b-button class="mt-3" variant="primary">Add Question</b-button></router-link>
-          </b-jumbotron>
-        </b-col>
-      </b-row>
+          <b-row>
+            <b-col>
+              <b-jumbotron header="Question List" class="p-5 bg-light border mb-0" lead="">
+                <router-link to="/addquestion"><b-button class="mt-3" variant="primary">Add Question</b-button></router-link>
+              </b-jumbotron>
+            </b-col>
+          </b-row>
 
-      <b-row>
-        <b-col cols="9">
-          <QuestionList />
-          <QuestionList />
-          <QuestionList />
-        </b-col>
-        <b-col cols="3">
-          <b-list-group class="mt-4">
-            <p><b class="pl-1">Watch tag</b></p>
-            <b-list-group-item class="d-flex justify-content-between align-items-center">
-              javascript
-              <b-badge v-if="!editTag" variant="primary" pill>14</b-badge>
-              <b-badge v-if="editTag" variant="danger" pill>X</b-badge>
-            </b-list-group-item>
+          <b-row>
+            <b-col cols="9">
+              <QuestionList v-for="(data,index) in questionData" :key="index" :questiondata="data" />
+            </b-col>
+            <b-col cols="3">
+              <Watchtag/>
+            </b-col>
+          </b-row>
 
-            <b-list-group-item class="d-flex justify-content-between align-items-center">
-              php
-              <b-badge v-if="!editTag" variant="primary" pill>2</b-badge>
-              <b-badge v-if="editTag" variant="danger" pill>X</b-badge>
-            </b-list-group-item>
-
-            <b-list-group-item class="d-flex justify-content-between align-items-center">
-              ruby
-              <b-badge v-if="!editTag" variant="primary" pill>1</b-badge>
-              <b-badge v-if="editTag" variant="danger" pill>X</b-badge>
-            </b-list-group-item>
-
-            <b-list-group-item v-if="editTag" class="d-flex justify-content-between align-items-center">
-              <b-form-select v-model="selected" :options="options" size="sm"></b-form-select>
-            </b-list-group-item>
-
-            <b-list-group-item class="d-flex justify-content-between align-items-center">
-              <b-button size="sm" @click="showEdit()" v-if="editTag" variant="secondary" class="my-2 my-sm-0 mr-2">Edit</b-button>
-              <b-button size="sm" @click="showEdit()" v-if="!editTag" variant="primary" class="my-2 my-sm-0 mr-2">Edit Watch tag</b-button>
-            </b-list-group-item>
-          </b-list-group>
-        </b-col>
-      </b-row>
-
-
-    </b-container>
+        </b-container>
+      </div>
+    </div>
 
 </template>
 
 <script>
 // @ is an alias to /src
 import QuestionList from '@/components/QuestionList.vue'
+import Watchtag from '@/components/Watchtag.vue'
 
 export default {
   name: 'home',
   components: {
-    QuestionList
+    QuestionList,
+    Watchtag
   },
   data () {
     return {
-      editTag: false,
-      selected: null,
-      options: [
-        { value: null, text: 'Select tag' },
-        { value: 'a', text: 'This is First option', count: 10 },
-        { value: 'b', text: 'Selected Option' },
-        { value: { C: '3PO' }, text: 'This is an option with object value' },
-        { value: 'd', text: 'This one is disabled', disabled: true }
-      ]
+      questionData: []
     }
   },
   methods: {
-    showEdit () {
-      this.editTag = !this.editTag
-      console.log(this.selected)
+    fetchQuestion () {
+      this.axios({
+        method: 'get',
+        url: 'http://localhost:3000/questions'
+      })
+        .then(({ data }) => {
+          this.questionData = data
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          this.next(err.response.data)
+        })
+    }
+  },
+  created () {
+    this.fetchQuestion()
+  },
+  computed: {
+    loginStatus () {
+      return this.$store.state.isLogin
     }
   }
-  // created () {
-  //   this.$store.dispatch('A_FETCH_QUESTION_LIST')
-  // },
-  // computed: {
-  //   question () {
-  //     return this.$store.state.questionList
-  //   }
-  // }
 }
 </script>
+
+
+<style scoped>
+  .main-title{
+    font-family: 'Alata', sans-serif;
+  }
+  .sub-title{
+    font-family: 'Open Sans', sans-serif;
+  }
+</style>

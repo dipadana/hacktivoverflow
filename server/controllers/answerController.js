@@ -3,7 +3,7 @@ const Question = require('../models/question')
 
 class AnswerController {
   
-  static findMyQuestion(req,res,next){
+  static findMyAnswer(req,res,next){
     const {_id} = req.loggedUser // Need a question id for get question answer
     Answer.find({UserId:_id}).populate('QuestionId')
       .then(data => {

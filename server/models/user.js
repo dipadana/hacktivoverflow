@@ -16,7 +16,7 @@ const userSchema = new Schema({
     required : "Password required"
   },
   tags: {type: [String], required: 'Tag is required'}
-})
+}, {timestamps:true,versionKey:false})
 
 userSchema.path('email').validate(function(value) {
   return User.findOne({ email: value })

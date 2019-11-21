@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="my-4 ml-3">How to create HTMk</h2>
+    <h2 class="my-4 ml-3"> {{ questiondetail.title }} </h2>
     <b-media>
       <template v-slot:aside>
         <b-container>
@@ -12,7 +12,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <h4 class="mb-0 text-center">10</h4>
+              <h4 class="mb-0 text-center"> {{ votes }} </h4>
             </b-col>
           </b-row>
           <b-row>
@@ -23,48 +23,50 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-img  @click="editQuestion()" src="https://image.flaticon.com/icons/svg/1160/1160515.svg" width="20" class="" alt="placeholder" style="cursor:pointer; margin-left:10px; margin-top:10px;"></b-img>
+              <b-img v-if="questiondetail.UserId._id == userid" @click="editQuestion()" src="https://image.flaticon.com/icons/svg/1160/1160515.svg" width="20" class="" alt="placeholder" style="cursor:pointer; margin-left:10px; margin-top:10px;"></b-img>
             </b-col>
           </b-row>
           <b-row>
             <b-col class="m-auto">
-              <b-img  @click="deleteQuestion()" style="cursor:pointer; margin-left:10px; margin-top:10px;" src="https://image.flaticon.com/icons/svg/1632/1632708.svg" width="20" class="" alt="placeholder"></b-img>
+              <b-img v-if="questiondetail.UserId._id == userid" @click="deleteQuestion()" style="cursor:pointer; margin-left:10px; margin-top:10px;" src="https://image.flaticon.com/icons/svg/1632/1632708.svg" width="20" class="" alt="placeholder"></b-img>
             </b-col>
           </b-row>
         </b-container>
       </template>
-      <div>
-        V-html here bro :)
-      </div>
+      <p class="mb-0 text-primary"> {{ questiondetail.UserId ? questiondetail.UserId.name : '' }} </p>
+      <p class="text-secondary"><small> {{ questiondetail.createdAt }} </small></p>
+      <div v-html="questiondetail.description"></div>
     </b-media>
   </div>
 </template>
 
 <script>
-import axios from '../api/server'
-import Swal from 'sweetalert2'
-
 export default {
   name: 'questionsection',
-  props: [
-    'data'
-  ],
+  props: {
+    questiondetail: Object
+  },
   data () {
     return {
       votes: 0,
       upBold: false,
-      downBold: false
+      downBold: false,
+      userid: localStorage.getItem('_id')
     }
   },
+  created () {
+    // console.log(this.questiondetail.downvotes.length)
+    // this.votes = this.questiondetail.upvotes.length - this.questiondetail.downvotes.length
+  },
   watch: {
-    data () {
-      this.votes = this.data.upvotes.length - this.data.downvotes.length
+    questiondetail () {
+      this.votes = this.questiondetail.upvotes.length - this.questiondetail.downvotes.length
 
-      if (this.data.upvotes.length === 0) {
+      if (this.questiondetail.upvotes.length === 0) {
         this.upBold = false
       } else {
-        for (let i = 0; i < this.data.upvotes.length; i++) {
-          if (this.data.upvotes[i] == localStorage.getItem('_id')) {
+        for (let i = 0; i < this.questiondetail.upvotes.length; i++) {
+          if (this.questiondetail.upvotes[i] == localStorage.getItem('_id')) {
             this.upBold = true
           } else {
             this.upBold = false
@@ -72,85 +74,78 @@ export default {
         }
       }
 
-      if (this.data.downvotes.length === 0) {
+      if (this.questiondetail.downvotes.length === 0) {
         this.downBold = false
       } else {
-        for (let i = 0; i < this.data.downvotes.length; i++) {
-          if (this.data.downvotes[i] == localStorage.getItem('_id')) {
+        for (let i = 0; i < this.questiondetail.downvotes.length; i++) {
+          if (this.questiondetail.downvotes[i] == localStorage.getItem('_id')) {
             this.downBold = true
           } else {
             this.downBold = false
           }
         }
       }
+
     }
   },
   methods: {
-    // upvotes () {
-    //   axios({
-    //     method: 'patch',
-    //     url: `/questions/upvotes/${this.data._id}`,
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log('up')
-    //       console.log(data)
-    //       this.$store.dispatch('A_FETCH_QUESTION_LIST')
-    //       this.$emit('updateResponse')
-    //     })
-    //     .catch(err => {
-    //       console.log(err.response)
-    //       Swal.fire(
-    //         'Wait!',
-    //         'You must be logged in to vote a question!',
-    //         'error'
-    //       )
-    //     })
-    // },
-    // downvotes () {
-    //   axios({
-    //     method: 'patch',
-    //     url: `/questions/downvotes/${this.data._id}`,
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log('down')
-    //       console.log(data)
-    //       this.$store.dispatch('A_FETCH_QUESTION_LIST')
-    //       this.$emit('updateResponse')
-    //     })
-    //     .catch(err => {
-    //       console.log(err.response)
-    //       Swal.fire(
-    //         'Wait!',
-    //         'You must be logged in to vote a question!',
-    //         'error'
-    //       )
-    //     })
-    // },
-    // deleteQuestion () {
-    //   axios({
-    //     method: 'delete',
-    //     url: `/questions/${this.data._id}`,
-    //     data: {
-    //       QuestionId: this.data.QuestionId
-    //     },
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log(data)
-    //       this.$router.push({ path: '/' })
-    //     })
-    //     .catch(err => { console.log(err.response) })
-    // },
+    upvotes () {
+      this.axios({
+        method: 'patch',
+        url: `/questions/upvotes/${this.$route.params.id}`,
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          console.log('up')
+          console.log(data)
+          // this.$store.dispatch('A_FETCH_QUESTION_LIST')
+          this.$emit('updateResponse')
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.next('You must be logged in to vote a question!')
+        })
+    },
+    downvotes () {
+      this.axios({
+        method: 'patch',
+        url: `/questions/downvotes/${this.$route.params.id}`,
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          console.log('down')
+          console.log(data)
+          // this.$store.dispatch('A_FETCH_QUESTION_LIST')
+          this.$emit('updateResponse')
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.next('You must be logged in to vote a question!')
+        })
+    },
+    deleteQuestion () {
+      this.axios({
+        method: 'delete',
+        url: `/questions/${this.$route.params.id}`,
+        headers: {
+          authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({data}) => {
+          this.successToast(data.message)
+          this.$router.push({ path:'/' })
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          this.next(err.response.data)
+        })
+    },
     editQuestion () {
-      this.$router.push({ path: `/editquestion/${this.data._id}` })
+      this.$router.push({ path: `/editquestion/${this.questiondetail._id}` })
     }
   }
 }

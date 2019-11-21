@@ -25,23 +25,24 @@ import axios from '../api/server'
 export default {
   data () {
     return {
-      content: "<h1>Some initial contensdsddt</h1>",
+      content: '<h1>Some initial contensdsddt</h1>',
       title: '',
       tags: ''
     }
   },
-  components:{
+  components: {
     VueEditor
   },
   methods: {
     editQuestion () {
       console.log('masuk edit')
-      axios({
+      this.axios({
         method: 'put',
         url: `/questions/${this.$route.params.id}`,
         data: {
           title: this.title,
-          description: this.editorData
+          description: this.content,
+          tags: this.tags
         },
         headers: {
           Authorization: localStorage.getItem('access_token')
@@ -49,27 +50,28 @@ export default {
       })
         .then(({ data }) => {
           console.log(data)
+          this.successToast(data.message)
           this.$router.push({ path: `/question/${this.$route.params.id}` })
         })
         .catch(err => {
-          console.log(err.response)
+          console.logP(err.response.data)
+          this.next(err.response.data)
         })
     },
     fetchData () {
-      axios({
+      this.axios({
         method: 'get',
-        url: `/questions/${this.$route.params.id}`,
-        headers: {
-          Authorization: localStorage.getItem('access_token')
-        }
+        url: `/questions/detail/${this.$route.params.id}`
       })
         .then(({ data }) => {
           this.title = data.title
-          this.editorData = data.description
+          this.content = data.description
+          this.tags = data.tags.join(', ')
           console.log(data)
         })
         .catch(err => {
-          console.log(err.response)
+          console.logP(err.response.data)
+          this.next(err.response.data)
         })
     }
   },

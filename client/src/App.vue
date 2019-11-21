@@ -17,9 +17,8 @@ export default {
   },
   created () {
     if (localStorage.getItem('access_token')) {
-      this.$store.commit('LOGIN_STATUS_CHANGE', true)
-      this.$store.commit('LOGIN_NAME_CHANGE', localStorage.getItem('name'))
-
+      this.$store.commit('CHANGE_LOGIN', true)
+      this.$store.commit('CHANGE_USERNAME', localStorage.getItem('name'))
       // this.$router.push({path:'/'})
     }
   }
@@ -27,5 +26,12 @@ export default {
 </script>
 
 <style>
-
+  @import url('https://fonts.googleapis.com/css?family=Alata&display=swap');
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+  body{
+    font-family: 'Open Sans', sans-serif !important;
+  }
+  .font1{
+    font-family: 'Alata', sans-serif;
+  }
 </style>

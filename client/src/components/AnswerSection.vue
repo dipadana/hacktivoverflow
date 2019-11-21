@@ -1,7 +1,8 @@
 <template>
   <div>
     <b-media class="pt-3">
-      <p class="mb-2"><small class="text-primary">Dipadnaa Ptu</small></p>
+      <p class="mb-0"><small class="text-primary"> {{ answerdetail.UserId.name }} </small></p>
+      <p class="mb-3 text-secondary"><small> {{ answerdetail.createdAt }} </small></p>
       <template v-slot:aside>
         <b-container>
           <b-row>
@@ -12,7 +13,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <h4 class="mb-0 text-center">10</h4>
+              <h4 class="mb-0 text-center"> {{ votes }} </h4>
             </b-col>
           </b-row>
           <b-row>
@@ -23,12 +24,12 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-img  @click="editAnswer()" src="https://image.flaticon.com/icons/svg/1160/1160515.svg" width="20" class="" alt="placeholder" style="cursor:pointer; margin-left:10px; margin-top:10px;"></b-img>
+              <b-img v-if="answerdetail.UserId._id == userid" @click="editAnswer()" src="https://image.flaticon.com/icons/svg/1160/1160515.svg" width="20" class="" alt="placeholder" style="cursor:pointer; margin-left:10px; margin-top:10px;"></b-img>
             </b-col>
           </b-row>
           <b-row>
             <b-col class="m-auto">
-              <b-img  @click="deleteAnswer()" style="cursor:pointer; margin-left:10px; margin-top:10px;" src="https://image.flaticon.com/icons/svg/1632/1632708.svg" width="20" class="" alt="placeholder"></b-img>
+              <b-img v-if="answerdetail.UserId._id == userid" @click="deleteAnswer()" style="cursor:pointer; margin-left:10px; margin-top:10px;" src="https://image.flaticon.com/icons/svg/1632/1632708.svg" width="20" class="" alt="placeholder"></b-img>
             </b-col>
           </b-row>
         </b-container>
@@ -45,21 +46,19 @@
 </template>
 
 <script>
-import axios from '../api/server'
 import { VueEditor } from 'vue2-editor'
-import Swal from 'sweetalert2'
 
 export default {
   name: 'answersection',
-  props: [
-    'data'
-  ],
-  components:{
+  props: {
+    answerdetail: Object
+  },
+  components: {
     VueEditor
   },
   created () {
-    // console.log(this.data, 'ini data di answer')
-    // this.votes = this.data.upvotes.length - this.data.downvotes.length
+    // console.log(this.answerdetail, 'ini data di answer')
+    this.votes = this.answerdetail.upvotes.length - this.answerdetail.downvotes.length
   },
   data () {
     return {
@@ -67,125 +66,120 @@ export default {
       show: false,
       upBold: false,
       downBold: false,
-      content: "<p>Some initial contensdsddt</p>",
-      title: '',
-      tags: ''
+      content: this.answerdetail.description,
+      userid: localStorage.getItem('_id')
     }
   },
   methods: {
-    // updateAnswerProcess () {
-    //   axios({
-    //     method: 'put',
-    //     url: `/answers/${this.data._id}`,
-    //     data: {
-    //       description: this.editorData
-    //     },
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log(data)
-    //       this.$emit('updateResponse')
-    //       this.show = false
-    //     })
-    //     .catch(err => {
-    //       console.log(err.response)
-    //     })
-    // },
+    updateAnswerProcess () {
+      this.axios({
+        method: 'put',
+        url: `/answers/${this.answerdetail._id}`,
+        data: {
+          description: this.content
+        },
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          this.successToast(data.message)
+          this.$emit('updateResponse')
+          this.show = false
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          this.next(err.response.data)
+        })
+    },
     editAnswer () {
       this.show = !this.show
     },
-    // upvotes () {
-    //   axios({
-    //     method: 'patch',
-    //     url: `/answers/upvotes/${this.data._id}`,
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log('up')
-    //       console.log(data)
-    //       this.$store.dispatch('A_FETCH_QUESTION_LIST')
-    //       this.$emit('updateResponse')
-    //     })
-    //     .catch(err => {
-    //       console.log(err.response)
-    //       Swal.fire(
-    //         'Wait!',
-    //         'You must be logged in to vote a question!',
-    //         'error'
-    //       )
-    //     })
-    // },
-    // downvotes () {
-    //   axios({
-    //     method: 'patch',
-    //     url: `/answers/downvotes/${this.data._id}`,
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
+    upvotes () {
+      this.axios({
+        method: 'patch',
+        url: `/answers/upvotes/${this.answerdetail._id}`,
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          console.log('up')
+          console.log(data)
+          // this.$store.dispatch('A_FETCH_QUESTION_LIST')
+          this.$emit('updateResponse')
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.next('You must be logged in to vote a question!')
+        })
+    },
+    downvotes () {
+      this.axios({
+        method: 'patch',
+        url: `/answers/downvotes/${this.answerdetail._id}`,
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
 
-    //   })
-    //     .then(({ data }) => {
-    //       console.log('down')
-    //       console.log(data)
-    //       this.$store.dispatch('A_FETCH_QUESTION_LIST')
-    //       this.$emit('updateResponse')
-    //     })
-    //     .catch(err => {
-    //       console.log(err.response)
-    //       Swal.fire(
-    //         'Wait!',
-    //         'You must be logged in to vote a question!',
-    //         'error'
-    //       )
-    //     })
-    // },
-    // deleteAnswer () {
-    //   axios({
-    //     method: 'delete',
-    //     url: `/answers/${this.data._id}/${this.data.QuestionId}`,
-    //     headers: {
-    //       Authorization: localStorage.getItem('access_token')
-    //     }
-    //   })
-    //     .then(({ data }) => {
-    //       console.log(data)
-    //       this.$emit('updateResponse')
-    //     })
-    //     .catch(err => { console.log(err.response) })
-    // }
+      })
+        .then(({ data }) => {
+          console.log('down')
+          console.log(data)
+          // this.$store.dispatch('A_FETCH_QUESTION_LIST')
+          this.$emit('updateResponse')
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.next('You must be logged in to vote a question!')
+        })
+    },
+    deleteAnswer () {
+      this.axios({
+        method: 'delete',
+        url: `/answers/${this.answerdetail._id}/${this.answerdetail.QuestionId}`,
+        headers: {
+          Authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          this.successToast(data.message)
+          this.$emit('updateResponse')
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          this.next(err.response.data)
+        })
+    }
   },
   watch: {
-    // data () {
-    //   this.votes = this.data.upvotes.length - this.data.downvotes.length
+    answerdetail () {
+      this.votes = this.answerdetail.upvotes.length - this.answerdetail.downvotes.length
 
-    //   if (this.data.upvotes.length === 0) {
-    //     this.upBold = false
-    //   } else {
-    //     for (let i = 0; i < this.data.upvotes.length; i++) {
-    //       if (this.data.upvotes[i] == localStorage.getItem('_id')) {
-    //         this.upBold = true
-    //       } else {
-    //         this.upBold = false
-    //       }
-    //     }
-    //   }
+      if (this.answerdetail.upvotes.length === 0) {
+        this.upBold = false
+      } else {
+        for (let i = 0; i < this.answerdetail.upvotes.length; i++) {
+          if (this.answerdetail.upvotes[i] == localStorage.getItem('_id')) {
+            this.upBold = true
+          } else {
+            this.upBold = false
+          }
+        }
+      }
 
-    //   if (this.data.downvotes.length === 0) {
-    //     this.downBold = false
-    //   } else {
-    //     for (let i = 0; i < this.data.downvotes.length; i++) {
-    //       if (this.data.downvotes[i] == localStorage.getItem('_id')) {
-    //         this.downBold = true
-    //       } else {
-    //         this.downBold = false
-    //       }
-    //     }
-    //   }
-    // }
+      if (this.answerdetail.downvotes.length === 0) {
+        this.downBold = false
+      } else {
+        for (let i = 0; i < this.answerdetail.downvotes.length; i++) {
+          if (this.answerdetail.downvotes[i] == localStorage.getItem('_id')) {
+            this.downBold = true
+          } else {
+            this.downBold = false
+          }
+        }
+      }
+    }
   }
 }
 </script>

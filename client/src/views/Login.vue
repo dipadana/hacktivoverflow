@@ -2,7 +2,7 @@
   <b-container class="h-100" style="margin-top:21vh;">
     <b-row class="h-100" align-h="center" align-v="center">
       <b-col cols="6" class="p-5 border bg-light">
-        <h3 class="mb-4">Login</h3>
+        <h3 class="mb-4 font1">Login <span class="text-primary">Hacktivoverflow</span></h3>
         <b-form @submit="onSubmit" @reset="onReset" v-if="show">
           <b-form-group
             id="input-group-1"
@@ -54,14 +54,12 @@ export default {
   methods: {
     onSubmit (evt) {
       evt.preventDefault()
-      this.$store.dispatch('A_LOGIN', { email: this.form.email, password: this.form.password })
+      this.$store.dispatch('login', { email: this.form.email, password: this.form.password })
     },
     onReset (evt) {
       evt.preventDefault()
-      // Reset our form values
       this.form.email = ''
       this.form.password = ''
-      // Trick to reset/clear native browser form validation state
       this.show = false
       this.$nextTick(() => {
         this.show = true

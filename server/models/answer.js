@@ -16,7 +16,7 @@ const answerSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   }
-})
+}, {timestamps:true,versionKey:false})
 
 const Answer = mongoose.model('Answer', answerSchema)
 module.exports = Answer

@@ -4,7 +4,7 @@
     <b-row>
       <b-col>
         <b-jumbotron class="p-5 bg-light border mb-0" lead="">
-          <h2 class="m-0"><b>Search result '{{ $route.params.key }}'</b></h2>
+          <h2 class="m-0"><b>My Question</b></h2>
         </b-jumbotron>
       </b-col>
     </b-row>
@@ -27,16 +27,24 @@ import QuestionList from '@/components/QuestionList.vue'
 import Watchtag from '@/components/Watchtag.vue'
 
 export default {
-  name: 'search',
+  name: 'searchtag',
   components: {
     QuestionList,
     Watchtag
   },
-  methods:{
+  data () {
+    return {
+      questionData: []
+    }
+  },
+  methods: {
     fetchQuestionData () {
       this.axios({
         method: 'get',
-        url: `/questions/searchtitle/${this.$route.params.key}`
+        url: `/questions/myquestion`,
+        headers: {
+          authorization: localStorage.getItem('access_token')
+        }
       })
       .then(({ data }) => {
         console.log(data)
@@ -46,16 +54,6 @@ export default {
         console.logP(err.response.data)
         this.next(err.response.data)
       })
-    }
-  },
-  data () {
-    return {
-      questionData: []
-    }
-  },
-  watch: {
-    '$route'(){
-      this.fetchQuestionData()
     }
   },
   created () {

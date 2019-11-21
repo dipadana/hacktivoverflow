@@ -20,8 +20,12 @@ const questionShema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Answer'
   }],
-  tags: {type: [String], required: 'Tag is required'}
-})
+  tags: {type: [String], required: 'Tag is required'},
+  views : {
+    type: Number,
+    default: 0
+  }
+}, {timestamps:true,versionKey:false})
 
 const Question = mongoose.model('Question', questionShema)
 module.exports = Question
