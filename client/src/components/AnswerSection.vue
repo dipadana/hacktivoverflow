@@ -2,7 +2,7 @@
   <div>
     <b-media class="pt-3">
       <p class="mb-0"><small class="text-primary"> {{ answerdetail.UserId.name }} </small></p>
-      <p class="mb-3 text-secondary"><small> {{ answerdetail.createdAt }} </small></p>
+      <p class="mb-3 text-secondary"><small> {{ moment(answerdetail.createdAt).format('dddd, MMMM Do, YYYY') }} </small></p>
       <template v-slot:aside>
         <b-container>
           <b-row>

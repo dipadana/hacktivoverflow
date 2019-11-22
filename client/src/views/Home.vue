@@ -6,7 +6,7 @@
           <img src="https://image.flaticon.com/icons/svg/1683/1683680.svg" width="200" alt="">
           <div>
             <h1 class="text-center main-title">Welcome in <span class="text-primary">Hacktivoverflow...</span></h1>
-            <h5 class="text-center sub-title mt-2">Just hit the search bar, and type your answer!</h5>
+            <h5 class="text-center sub-title mt-2">Just hit the search bar, and get your answer!</h5>
             <p class="text-center mt-2"><small>We love people who code.</small></p>
           </div>
         </b-row>

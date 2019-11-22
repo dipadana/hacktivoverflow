@@ -34,7 +34,7 @@
         </b-container>
       </template>
       <p class="mb-0 text-primary"> {{ questiondetail.UserId ? questiondetail.UserId.name : '' }} </p>
-      <p class="text-secondary"><small> {{ questiondetail.createdAt }} </small></p>
+      <p class="text-secondary"><small> {{ moment(questiondetail.createdAt).format('dddd, MMMM Do, YYYY') }} </small></p>
       <div v-html="questiondetail.description"></div>
     </b-media>
   </div>
