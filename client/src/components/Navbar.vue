@@ -9,8 +9,8 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item to="/myquestion"> <span class="text-primary">Myquestion</span> </b-nav-item>
-        <b-nav-item to="/myanswer"> <span class="text-primary">Myanswer</span> </b-nav-item>
+        <b-nav-item v-if="$store.state.isLogin" to="/myquestion"> <span class="text-primary">Myquestion</span> </b-nav-item>
+        <b-nav-item v-if="$store.state.isLogin" to="/myanswer"> <span class="text-primary">Myanswer</span> </b-nav-item>
       </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">

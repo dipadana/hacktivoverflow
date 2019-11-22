@@ -1,10 +1,10 @@
 <template>
   <b-list-group class="mt-4">
     <p><b class="pl-1">Watch tag</b></p>
-    <b-list-group-item @click="gotoTagListQuestion(data.text)" v-for="(data,index) in finalTags" :key="index" class="d-flex justify-content-between align-items-center">
-      {{ data.text }}
+    <b-list-group-item  v-for="(data,index) in finalTags" :key="index" class="d-flex justify-content-between align-items-center">
+      <span @click="gotoTagListQuestion(data.text)" style="cursor: pointer;">{{ data.text }}</span>
       <b-badge v-if="!editTag" variant="primary" pill> {{ data.count }} </b-badge>
-      <b-badge v-if="editTag" variant="danger" pill>X</b-badge>
+      <b-badge @click="deleteTag(data.text)" v-if="editTag" variant="danger" pill>X</b-badge>
     </b-list-group-item>
 
     <b-list-group-item v-if="editTag" class="d-flex justify-content-between align-items-center">
@@ -34,6 +34,26 @@ export default {
   methods: {
     showEdit () {
       this.editTag = !this.editTag
+    },
+    deleteTag (tag) {
+      console.log('delete tag!', tag)
+      this.axios({
+        url: `/users/${tag}`,
+        method: 'delete',
+        headers: {
+          authorization: localStorage.getItem('access_token')
+        }
+      })
+        .then(({ data }) => {
+          console.log(data)
+          this.finalTags = []
+          this.fetchAllTagData()
+          this.successToast(`Tag ${tag} Successfuly Deleted`)
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          this.next(err.response.data)
+        })
     },
     fetchAllTagData () {
       this.axios({

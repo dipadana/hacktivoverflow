@@ -6,6 +6,6 @@ router.post('/login', UserController.login) //ok
 router.post('/register', UserController.register) //ok
 router.get('/tags', authentication, UserController.getMyTag)
 router.patch('/addtag', authentication,UserController.editTag)
-router.delete('/', authentication,UserController.deleteTag)
+router.delete('/:tag', authentication,UserController.deleteTag)
 
 module.exports = router

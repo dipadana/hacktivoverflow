@@ -2,6 +2,7 @@ const router = require('express').Router()
 const questionController = require('../controllers/questionController')
 const {authentication,questionAuthorization} = require('../middleware/auth')
 
+router.patch('/views/:_id', questionController.viewscount)
 router.get('/', questionController.questionList) //ok
 router.get('/detail/:_id', questionController.questionDetail) //ok
 router.get('/searchtag/:tag', questionController.questionByTag)

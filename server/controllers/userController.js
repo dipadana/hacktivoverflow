@@ -69,7 +69,8 @@ class UserController {
     const {_id} = req.loggedUser
     User.updateOne({_id},{$pull:{tags:tag}})
       .then(data => {
-        req.status(200).json(data)
+        console.log(data)
+        res.status(200).json(data)
       })
       .catch(next)
   }

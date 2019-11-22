@@ -170,6 +170,20 @@ class QuestionController {
       })
       .catch(next)
   }
+
+  static viewscount(req,res,next) {
+    const {_id} = req.params //question id
+    Question.findOne({_id})
+      .then(data => {
+        console.log(data)
+        let updateViews = Number(1 + data.views)
+        return Question.updateOne({_id},{views:updateViews})
+      })
+      .then(data => {
+        res.status(200).json({message:'views updated'})
+      })
+      .catch(next)
+  }
 }
 
 module.exports = QuestionController

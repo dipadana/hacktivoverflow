@@ -80,10 +80,17 @@ export default {
           console.log(err.response.data)
           this.next(err.response.data)
         })
+    },
+    updateViewsData () {
+      this.axios({
+        method: 'patch',
+        url: `/questions/views/${this.$route.params.id}`
+      })
     }
   },
   created () {
     this.fetchQuestionDetail()
+    this.updateViewsData()
   }
 }
 </script>
